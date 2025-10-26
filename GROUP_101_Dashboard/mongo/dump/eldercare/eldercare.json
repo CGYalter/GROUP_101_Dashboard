@@ -1,0 +1,268 @@
+{
+  "database": "eldercare",
+  "collections": [
+    {
+      "name": "sensor_readings",
+      "data": [
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439011"},
+          "patient_id": 1,
+          "sensor_id": "SENSOR_001",
+          "timestamp": {"$date": "2024-01-01T08:00:00.000Z"},
+          "heart_rate": 72,
+          "blood_pressure": "120/80",
+          "spo2": 98,
+          "temperature": 36.5,
+          "step_count": 1500,
+          "location": "房间A101"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439012"},
+          "patient_id": 1,
+          "sensor_id": "SENSOR_001",
+          "timestamp": {"$date": "2024-01-01T09:00:00.000Z"},
+          "heart_rate": 75,
+          "blood_pressure": "118/78",
+          "spo2": 97,
+          "temperature": 36.6,
+          "step_count": 1800,
+          "location": "房间A101"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439013"},
+          "patient_id": 1,
+          "sensor_id": "SENSOR_001",
+          "timestamp": {"$date": "2024-01-01T10:00:00.000Z"},
+          "heart_rate": 78,
+          "blood_pressure": "125/82",
+          "spo2": 96,
+          "temperature": 36.4,
+          "step_count": 2100,
+          "location": "房间A101"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439014"},
+          "patient_id": 1,
+          "sensor_id": "SENSOR_001",
+          "timestamp": {"$date": "2024-01-01T11:00:00.000Z"},
+          "heart_rate": 82,
+          "blood_pressure": "130/85",
+          "spo2": 95,
+          "temperature": 36.7,
+          "step_count": 2400,
+          "location": "房间A101"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439015"},
+          "patient_id": 1,
+          "sensor_id": "SENSOR_001",
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "heart_rate": 85,
+          "blood_pressure": "135/88",
+          "spo2": 94,
+          "temperature": 36.8,
+          "step_count": 2700,
+          "location": "房间A101"
+        }
+      ]
+    },
+    {
+      "name": "device_status",
+      "data": [
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439021"},
+          "sensor_id": "SENSOR_001",
+          "patient_id": 1,
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "battery_level": 85,
+          "is_active": true,
+          "signal_strength": "Strong",
+          "last_sync": {"$date": "2024-01-01T12:00:00.000Z"},
+          "firmware_version": "v2.1.3"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439022"},
+          "sensor_id": "SENSOR_002",
+          "patient_id": 2,
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "battery_level": 92,
+          "is_active": true,
+          "signal_strength": "Medium",
+          "last_sync": {"$date": "2024-01-01T12:00:00.000Z"},
+          "firmware_version": "v2.1.2"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439023"},
+          "sensor_id": "SENSOR_003",
+          "patient_id": 3,
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "battery_level": 78,
+          "is_active": true,
+          "signal_strength": "Strong",
+          "last_sync": {"$date": "2024-01-01T12:00:00.000Z"},
+          "firmware_version": "v2.1.3"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439024"},
+          "sensor_id": "SENSOR_004",
+          "patient_id": 4,
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "battery_level": 15,
+          "is_active": true,
+          "signal_strength": "Weak",
+          "last_sync": {"$date": "2024-01-01T11:55:00.000Z"},
+          "firmware_version": "v2.1.1"
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439025"},
+          "sensor_id": "SENSOR_005",
+          "patient_id": 5,
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "battery_level": 95,
+          "is_active": true,
+          "signal_strength": "Strong",
+          "last_sync": {"$date": "2024-01-01T12:00:00.000Z"},
+          "firmware_version": "v2.1.3"
+        }
+      ]
+    },
+    {
+      "name": "alerts",
+      "data": [
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439031"},
+          "alert_id": "ALERT_001",
+          "patient_id": 1,
+          "alert_type": "心率异常",
+          "severity": "High",
+          "timestamp": {"$date": "2024-01-01T10:30:00.000Z"},
+          "location": "房间A101",
+          "description": "患者心率超过正常范围",
+          "status": "Unread",
+          "caregiver_id": 1,
+          "resolved_at": null
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439032"},
+          "alert_id": "ALERT_002",
+          "patient_id": 2,
+          "alert_type": "血压异常",
+          "severity": "Medium",
+          "timestamp": {"$date": "2024-01-01T11:15:00.000Z"},
+          "location": "房间A102",
+          "description": "患者血压偏高",
+          "status": "Responded",
+          "caregiver_id": 2,
+          "resolved_at": {"$date": "2024-01-01T11:45:00.000Z"}
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439033"},
+          "alert_id": "ALERT_003",
+          "patient_id": 3,
+          "alert_type": "血氧异常",
+          "severity": "High",
+          "timestamp": {"$date": "2024-01-01T12:00:00.000Z"},
+          "location": "房间A103",
+          "description": "患者血氧饱和度低于正常值",
+          "status": "Unread",
+          "caregiver_id": 3,
+          "resolved_at": null
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439034"},
+          "alert_id": "ALERT_004",
+          "patient_id": 4,
+          "alert_type": "设备故障",
+          "severity": "Low",
+          "timestamp": {"$date": "2024-01-01T12:30:00.000Z"},
+          "location": "房间A104",
+          "description": "设备电池电量低",
+          "status": "Resolved",
+          "caregiver_id": 4,
+          "resolved_at": {"$date": "2024-01-01T13:00:00.000Z"}
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439035"},
+          "alert_id": "ALERT_005",
+          "patient_id": 5,
+          "alert_type": "体温异常",
+          "severity": "Medium",
+          "timestamp": {"$date": "2024-01-01T13:00:00.000Z"},
+          "location": "房间A105",
+          "description": "患者体温偏高",
+          "status": "Responded",
+          "caregiver_id": 5,
+          "resolved_at": {"$date": "2024-01-01T13:30:00.000Z"}
+        }
+      ]
+    },
+    {
+      "name": "audit_logs",
+      "data": [
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439041"},
+          "log_id": "LOG_001",
+          "user_id": "caregiver_1",
+          "action": "查看患者数据",
+          "timestamp": {"$date": "2024-01-01T08:00:00.000Z"},
+          "patient_id": 1,
+          "details": "护理人员查看了患者1的健康数据",
+          "ip_address": "192.168.1.100",
+          "user_agent": "Mozilla/5.0..."
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439042"},
+          "log_id": "LOG_002",
+          "user_id": "doctor_1",
+          "action": "设置健康阈值",
+          "timestamp": {"$date": "2024-01-01T08:30:00.000Z"},
+          "patient_id": 2,
+          "details": "医生为患者2设置了新的健康阈值",
+          "ip_address": "192.168.1.101",
+          "user_agent": "Mozilla/5.0..."
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439043"},
+          "log_id": "LOG_003",
+          "user_id": "admin_1",
+          "action": "系统维护",
+          "timestamp": {"$date": "2024-01-01T09:00:00.000Z"},
+          "patient_id": null,
+          "details": "管理员执行了系统维护操作",
+          "ip_address": "192.168.1.102",
+          "user_agent": "Mozilla/5.0..."
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439044"},
+          "log_id": "LOG_004",
+          "user_id": "caregiver_2",
+          "action": "响应警报",
+          "timestamp": {"$date": "2024-01-01T09:30:00.000Z"},
+          "patient_id": 3,
+          "details": "护理人员响应了患者3的警报",
+          "ip_address": "192.168.1.103",
+          "user_agent": "Mozilla/5.0..."
+        },
+        {
+          "_id": {"$oid": "507f1f77bcf86cd799439045"},
+          "log_id": "LOG_005",
+          "user_id": "patient_1",
+          "action": "查看个人数据",
+          "timestamp": {"$date": "2024-01-01T10:00:00.000Z"},
+          "patient_id": 1,
+          "details": "患者查看了自己的健康数据",
+          "ip_address": "192.168.1.104",
+          "user_agent": "Mobile App"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "database_version": "7.0.0",
+    "dump_version": "1.0",
+    "created_at": "2024-01-01T12:00:00.000Z",
+    "total_collections": 4,
+    "total_documents": 20
+  }
+}
+

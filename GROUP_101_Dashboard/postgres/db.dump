@@ -1,0 +1,398 @@
+--
+-- PostgreSQL database dump
+-- 智能养老院健康监控系统
+-- 数据库: eldercare_db
+-- 生成时间: 2024-01-01
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- 创建数据库
+--
+
+CREATE DATABASE eldercare_db WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Chinese (Simplified)_China.utf8';
+
+\connect eldercare_db
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- 创建表结构
+--
+
+CREATE TABLE public.patient (
+    patientid integer NOT NULL,
+    name character varying(100) NOT NULL,
+    age integer NOT NULL,
+    gender character varying(10),
+    room_number character varying(20),
+    admission_date date,
+    medical_condition text,
+    emergency_contact character varying(100),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.caregiver (
+    caregiverid integer NOT NULL,
+    name character varying(100) NOT NULL,
+    department character varying(50),
+    shift character varying(20),
+    phone character varying(20),
+    email character varying(100),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.medical_staff (
+    staffid integer NOT NULL,
+    name character varying(100) NOT NULL,
+    specialization character varying(50),
+    department character varying(50),
+    license_number character varying(50),
+    phone character varying(20),
+    email character varying(100),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.wearabledevice (
+    deviceid integer NOT NULL,
+    devicetype character varying(50) NOT NULL,
+    assignedpatientid integer,
+    batterylevel integer DEFAULT 100,
+    isactive boolean DEFAULT true,
+    lastsynctime timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.healthrecord (
+    recordid integer NOT NULL,
+    deviceid integer,
+    timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    heartrate integer,
+    bloodpressure character varying(20),
+    spo2 integer,
+    stepcount integer,
+    temperature numeric(4,1),
+    notes text
+);
+
+CREATE TABLE public.alert (
+    alertid integer NOT NULL,
+    recordid integer,
+    alerttype character varying(50) NOT NULL,
+    alertstatus character varying(20) DEFAULT 'Unread'::character varying,
+    severity character varying(20) DEFAULT 'Medium'::character varying,
+    location character varying(100),
+    timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    recipientcaregiverid integer,
+    description text
+);
+
+CREATE TABLE public.healththreshold (
+    thresholdid integer NOT NULL,
+    patientid integer,
+    staffid integer,
+    metrictype character varying(50) NOT NULL,
+    minvalue numeric(10,2),
+    maxvalue numeric(10,2),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.patientcaregiverjunction (
+    junctionid integer NOT NULL,
+    patientid integer,
+    caregiverid integer,
+    assigned_date date DEFAULT CURRENT_DATE,
+    is_active boolean DEFAULT true
+);
+
+--
+-- 创建序列
+--
+
+CREATE SEQUENCE public.patient_patientid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.caregiver_caregiverid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.medical_staff_staffid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.wearabledevice_deviceid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.healthrecord_recordid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.alert_alertid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.healththreshold_thresholdid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE public.patientcaregiverjunction_junctionid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+--
+-- 设置序列所有者
+--
+
+ALTER SEQUENCE public.patient_patientid_seq OWNED BY public.patient.patientid;
+ALTER SEQUENCE public.caregiver_caregiverid_seq OWNED BY public.caregiver.caregiverid;
+ALTER SEQUENCE public.medical_staff_staffid_seq OWNED BY public.medical_staff.staffid;
+ALTER SEQUENCE public.wearabledevice_deviceid_seq OWNED BY public.wearabledevice.deviceid;
+ALTER SEQUENCE public.healthrecord_recordid_seq OWNED BY public.healthrecord.recordid;
+ALTER SEQUENCE public.alert_alertid_seq OWNED BY public.alert.alertid;
+ALTER SEQUENCE public.healththreshold_thresholdid_seq OWNED BY public.healththreshold.thresholdid;
+ALTER SEQUENCE public.patientcaregiverjunction_junctionid_seq OWNED BY public.patientcaregiverjunction.junctionid;
+
+--
+-- 设置默认值
+--
+
+ALTER TABLE ONLY public.patient ALTER COLUMN patientid SET DEFAULT nextval('public.patient_patientid_seq'::regclass);
+ALTER TABLE ONLY public.caregiver ALTER COLUMN caregiverid SET DEFAULT nextval('public.caregiver_caregiverid_seq'::regclass);
+ALTER TABLE ONLY public.medical_staff ALTER COLUMN staffid SET DEFAULT nextval('public.medical_staff_staffid_seq'::regclass);
+ALTER TABLE ONLY public.wearabledevice ALTER COLUMN deviceid SET DEFAULT nextval('public.wearabledevice_deviceid_seq'::regclass);
+ALTER TABLE ONLY public.healthrecord ALTER COLUMN recordid SET DEFAULT nextval('public.healthrecord_recordid_seq'::regclass);
+ALTER TABLE ONLY public.alert ALTER COLUMN alertid SET DEFAULT nextval('public.alert_alertid_seq'::regclass);
+ALTER TABLE ONLY public.healththreshold ALTER COLUMN thresholdid SET DEFAULT nextval('public.healththreshold_thresholdid_seq'::regclass);
+ALTER TABLE ONLY public.patientcaregiverjunction ALTER COLUMN junctionid SET DEFAULT nextval('public.patientcaregiverjunction_junctionid_seq'::regclass);
+
+--
+-- 插入数据
+--
+
+COPY public.patient (patientid, name, age, gender, room_number, admission_date, medical_condition, emergency_contact, created_at) FROM stdin;
+1	张明	78	男	A101	2023-01-15	高血压、糖尿病	张小红 138-0000-0001	2024-01-01 00:00:00
+2	李华	82	女	A102	2023-02-20	心脏病、关节炎	李小明 138-0000-0002	2024-01-01 00:00:00
+3	王芳	75	女	A103	2023-03-10	糖尿病、骨质疏松	王大明 138-0000-0003	2024-01-01 00:00:00
+4	刘强	85	男	A104	2023-01-25	高血压、中风后遗症	刘小红 138-0000-0004	2024-01-01 00:00:00
+5	陈丽	79	女	A105	2023-02-15	心脏病、高血压	陈小明 138-0000-0005	2024-01-01 00:00:00
+6	杨伟	81	男	A106	2023-03-05	糖尿病、肾病	杨小红 138-0000-0006	2024-01-01 00:00:00
+7	赵敏	77	女	A107	2023-01-30	高血压、关节炎	赵大明 138-0000-0007	2024-01-01 00:00:00
+8	孙涛	83	男	A108	2023-02-25	心脏病、糖尿病	孙小红 138-0000-0008	2024-01-01 00:00:00
+9	周静	76	女	A109	2023-03-15	高血压、骨质疏松	周小明 138-0000-0009	2024-01-01 00:00:00
+10	吴刚	80	男	A110	2023-01-20	糖尿病、高血压	吴小红 138-0000-0010	2024-01-01 00:00:00
+11	郑美	84	女	B101	2023-02-10	心脏病、关节炎	郑大明 138-0000-0011	2024-01-01 00:00:00
+12	冯军	78	男	B102	2023-03-20	高血压、中风后遗症	冯小红 138-0000-0012	2024-01-01 00:00:00
+13	何丽	82	女	B103	2023-01-10	糖尿病、肾病	何小明 138-0000-0013	2024-01-01 00:00:00
+14	黄强	79	男	B104	2023-02-05	心脏病、高血压	黄小红 138-0000-0014	2024-01-01 00:00:00
+15	林敏	85	女	B105	2023-03-25	高血压、关节炎	林大明 138-0000-0015	2024-01-01 00:00:00
+16	徐涛	77	男	B106	2023-01-15	糖尿病、骨质疏松	徐小红 138-0000-0016	2024-01-01 00:00:00
+17	马静	81	女	B107	2023-02-20	心脏病、糖尿病	马小明 138-0000-0017	2024-01-01 00:00:00
+18	朱刚	83	男	B108	2023-03-10	高血压、肾病	朱小红 138-0000-0018	2024-01-01 00:00:00
+19	胡美	76	女	B109	2023-01-25	糖尿病、高血压	胡大明 138-0000-0019	2024-01-01 00:00:00
+20	郭军	80	男	B110	2023-02-15	心脏病、关节炎	郭小红 138-0000-0020	2024-01-01 00:00:00
+21	高丽	84	女	C101	2023-03-05	高血压、中风后遗症	高小明 138-0000-0021	2024-01-01 00:00:00
+22	梁强	78	男	C102	2023-01-30	糖尿病、肾病	梁小红 138-0000-0022	2024-01-01 00:00:00
+23	宋敏	82	女	C103	2023-02-25	心脏病、高血压	宋大明 138-0000-0023	2024-01-01 00:00:00
+24	唐涛	79	男	C104	2023-03-15	高血压、骨质疏松	唐小红 138-0000-0024	2024-01-01 00:00:00
+25	韩静	85	女	C105	2023-01-20	糖尿病、关节炎	韩小明 138-0000-0025	2024-01-01 00:00:00
+26	曹刚	77	男	C106	2023-02-10	心脏病、糖尿病	曹小红 138-0000-0026	2024-01-01 00:00:00
+27	袁美	81	女	C107	2023-03-20	高血压、肾病	袁大明 138-0000-0027	2024-01-01 00:00:00
+28	邓军	83	男	C108	2023-01-10	糖尿病、高血压	邓小红 138-0000-0028	2024-01-01 00:00:00
+29	许丽	76	女	C109	2023-02-05	心脏病、关节炎	许小明 138-0000-0029	2024-01-01 00:00:00
+30	谢强	80	男	C110	2023-03-25	高血压、中风后遗症	谢小红 138-0000-0030	2024-01-01 00:00:00
+31	田敏	84	女	D101	2023-01-15	糖尿病、肾病	田大明 138-0000-0031	2024-01-01 00:00:00
+32	董涛	78	男	D102	2023-02-20	心脏病、高血压	董小红 138-0000-0032	2024-01-01 00:00:00
+33	薛静	82	女	D103	2023-03-10	高血压、骨质疏松	薛小明 138-0000-0033	2024-01-01 00:00:00
+34	范刚	79	男	D104	2023-01-25	糖尿病、关节炎	范小红 138-0000-0034	2024-01-01 00:00:00
+35	石美	85	女	D105	2023-02-15	心脏病、糖尿病	石大明 138-0000-0035	2024-01-01 00:00:00
+36	姚军	77	男	D106	2023-03-05	高血压、肾病	姚小红 138-0000-0036	2024-01-01 00:00:00
+37	谭丽	81	女	D107	2023-01-30	糖尿病、高血压	谭小明 138-0000-0037	2024-01-01 00:00:00
+38	廖强	83	男	D108	2023-02-25	心脏病、关节炎	廖小红 138-0000-0038	2024-01-01 00:00:00
+39	邹敏	76	女	D109	2023-03-15	高血压、中风后遗症	邹大明 138-0000-0039	2024-01-01 00:00:00
+40	熊涛	80	男	D110	2023-01-20	糖尿病、肾病	熊小红 138-0000-0040	2024-01-01 00:00:00
+41	金静	84	女	E101	2023-02-10	心脏病、高血压	金小明 138-0000-0041	2024-01-01 00:00:00
+42	陆刚	78	男	E102	2023-03-20	高血压、骨质疏松	陆小红 138-0000-0042	2024-01-01 00:00:00
+43	郝美	82	女	E103	2023-01-10	糖尿病、关节炎	郝大明 138-0000-0043	2024-01-01 00:00:00
+44	孔军	79	男	E104	2023-02-05	心脏病、糖尿病	孔小红 138-0000-0044	2024-01-01 00:00:00
+45	白丽	85	女	E105	2023-03-25	高血压、肾病	白小明 138-0000-0045	2024-01-01 00:00:00
+46	崔强	77	男	E106	2023-01-15	糖尿病、高血压	崔小红 138-0000-0046	2024-01-01 00:00:00
+47	康敏	81	女	E107	2023-02-20	心脏病、关节炎	康大明 138-0000-0047	2024-01-01 00:00:00
+48	毛涛	83	男	E108	2023-03-10	高血压、中风后遗症	毛小红 138-0000-0048	2024-01-01 00:00:00
+49	邱静	76	女	E109	2023-01-25	糖尿病、肾病	邱小明 138-0000-0049	2024-01-01 00:00:00
+50	秦刚	80	男	E110	2023-02-15	心脏病、高血压	秦小红 138-0000-0050	2024-01-01 00:00:00
+\.
+
+COPY public.caregiver (caregiverid, name, department, shift, phone, email, created_at) FROM stdin;
+1	护理员张	护理部	白班	139-0000-0001	nurse1@eldercare.com	2024-01-01 00:00:00
+2	护理员李	护理部	夜班	139-0000-0002	nurse2@eldercare.com	2024-01-01 00:00:00
+3	护理员王	护理部	白班	139-0000-0003	nurse3@eldercare.com	2024-01-01 00:00:00
+4	护理员刘	护理部	夜班	139-0000-0004	nurse4@eldercare.com	2024-01-01 00:00:00
+5	护理员陈	护理部	白班	139-0000-0005	nurse5@eldercare.com	2024-01-01 00:00:00
+6	护理员杨	护理部	夜班	139-0000-0006	nurse6@eldercare.com	2024-01-01 00:00:00
+7	护理员赵	护理部	白班	139-0000-0007	nurse7@eldercare.com	2024-01-01 00:00:00
+8	护理员孙	护理部	夜班	139-0000-0008	nurse8@eldercare.com	2024-01-01 00:00:00
+9	护理员周	护理部	白班	139-0000-0009	nurse9@eldercare.com	2024-01-01 00:00:00
+10	护理员吴	护理部	夜班	139-0000-0010	nurse10@eldercare.com	2024-01-01 00:00:00
+11	护理员郑	护理部	白班	139-0000-0011	nurse11@eldercare.com	2024-01-01 00:00:00
+12	护理员冯	护理部	夜班	139-0000-0012	nurse12@eldercare.com	2024-01-01 00:00:00
+13	护理员何	护理部	白班	139-0000-0013	nurse13@eldercare.com	2024-01-01 00:00:00
+14	护理员黄	护理部	夜班	139-0000-0014	nurse14@eldercare.com	2024-01-01 00:00:00
+15	护理员林	护理部	白班	139-0000-0015	nurse15@eldercare.com	2024-01-01 00:00:00
+16	护理员徐	护理部	夜班	139-0000-0016	nurse16@eldercare.com	2024-01-01 00:00:00
+17	护理员马	护理部	白班	139-0000-0017	nurse17@eldercare.com	2024-01-01 00:00:00
+18	护理员朱	护理部	夜班	139-0000-0018	nurse18@eldercare.com	2024-01-01 00:00:00
+19	护理员胡	护理部	白班	139-0000-0019	nurse19@eldercare.com	2024-01-01 00:00:00
+20	护理员郭	护理部	夜班	139-0000-0020	nurse20@eldercare.com	2024-01-01 00:00:00
+\.
+
+COPY public.medical_staff (staffid, name, specialization, department, license_number, phone, email, created_at) FROM stdin;
+1	医生张	内科	医疗部	MD001	137-0000-0001	doctor1@eldercare.com	2024-01-01 00:00:00
+2	医生李	心脏病科	医疗部	MD002	137-0000-0002	doctor2@eldercare.com	2024-01-01 00:00:00
+3	医生王	内分泌科	医疗部	MD003	137-0000-0003	doctor3@eldercare.com	2024-01-01 00:00:00
+4	医生刘	神经科	医疗部	MD004	137-0000-0004	doctor4@eldercare.com	2024-01-01 00:00:00
+5	医生陈	骨科	医疗部	MD005	137-0000-0005	doctor5@eldercare.com	2024-01-01 00:00:00
+6	医生杨	肾内科	医疗部	MD006	137-0000-0006	doctor6@eldercare.com	2024-01-01 00:00:00
+7	医生赵	老年科	医疗部	MD007	137-0000-0007	doctor7@eldercare.com	2024-01-01 00:00:00
+8	医生孙	康复科	医疗部	MD008	137-0000-0008	doctor8@eldercare.com	2024-01-01 00:00:00
+9	医生周	急诊科	医疗部	MD009	137-0000-0009	doctor9@eldercare.com	2024-01-01 00:00:00
+10	医生吴	全科	医疗部	MD010	137-0000-0010	doctor10@eldercare.com	2024-01-01 00:00:00
+\.
+
+--
+-- 设置序列值
+--
+
+SELECT pg_catalog.setval('public.patient_patientid_seq', 50, true);
+SELECT pg_catalog.setval('public.caregiver_caregiverid_seq', 20, true);
+SELECT pg_catalog.setval('public.medical_staff_staffid_seq', 10, true);
+SELECT pg_catalog.setval('public.wearabledevice_deviceid_seq', 50, true);
+SELECT pg_catalog.setval('public.healthrecord_recordid_seq', 500, true);
+SELECT pg_catalog.setval('public.alert_alertid_seq', 50, true);
+SELECT pg_catalog.setval('public.healththreshold_thresholdid_seq', 30, true);
+SELECT pg_catalog.setval('public.patientcaregiverjunction_junctionid_seq', 50, true);
+
+--
+-- 添加主键约束
+--
+
+ALTER TABLE ONLY public.patient
+    ADD CONSTRAINT patient_pkey PRIMARY KEY (patientid);
+
+ALTER TABLE ONLY public.caregiver
+    ADD CONSTRAINT caregiver_pkey PRIMARY KEY (caregiverid);
+
+ALTER TABLE ONLY public.medical_staff
+    ADD CONSTRAINT medical_staff_pkey PRIMARY KEY (staffid);
+
+ALTER TABLE ONLY public.wearabledevice
+    ADD CONSTRAINT wearabledevice_pkey PRIMARY KEY (deviceid);
+
+ALTER TABLE ONLY public.healthrecord
+    ADD CONSTRAINT healthrecord_pkey PRIMARY KEY (recordid);
+
+ALTER TABLE ONLY public.alert
+    ADD CONSTRAINT alert_pkey PRIMARY KEY (alertid);
+
+ALTER TABLE ONLY public.healththreshold
+    ADD CONSTRAINT healththreshold_pkey PRIMARY KEY (thresholdid);
+
+ALTER TABLE ONLY public.patientcaregiverjunction
+    ADD CONSTRAINT patientcaregiverjunction_pkey PRIMARY KEY (junctionid);
+
+--
+-- 添加外键约束
+--
+
+ALTER TABLE ONLY public.wearabledevice
+    ADD CONSTRAINT wearabledevice_assignedpatientid_fkey FOREIGN KEY (assignedpatientid) REFERENCES public.patient(patientid);
+
+ALTER TABLE ONLY public.healthrecord
+    ADD CONSTRAINT healthrecord_deviceid_fkey FOREIGN KEY (deviceid) REFERENCES public.wearabledevice(deviceid);
+
+ALTER TABLE ONLY public.alert
+    ADD CONSTRAINT alert_recordid_fkey FOREIGN KEY (recordid) REFERENCES public.healthrecord(recordid);
+
+ALTER TABLE ONLY public.alert
+    ADD CONSTRAINT alert_recipientcaregiverid_fkey FOREIGN KEY (recipientcaregiverid) REFERENCES public.caregiver(caregiverid);
+
+ALTER TABLE ONLY public.healththreshold
+    ADD CONSTRAINT healththreshold_patientid_fkey FOREIGN KEY (patientid) REFERENCES public.patient(patientid);
+
+ALTER TABLE ONLY public.healththreshold
+    ADD CONSTRAINT healththreshold_staffid_fkey FOREIGN KEY (staffid) REFERENCES public.medical_staff(staffid);
+
+ALTER TABLE ONLY public.patientcaregiverjunction
+    ADD CONSTRAINT patientcaregiverjunction_patientid_fkey FOREIGN KEY (patientid) REFERENCES public.patient(patientid);
+
+ALTER TABLE ONLY public.patientcaregiverjunction
+    ADD CONSTRAINT patientcaregiverjunction_caregiverid_fkey FOREIGN KEY (caregiverid) REFERENCES public.caregiver(caregiverid);
+
+--
+-- 创建索引
+--
+
+CREATE INDEX idx_healthrecord_timestamp ON public.healthrecord USING btree (timestamp);
+CREATE INDEX idx_healthrecord_deviceid ON public.healthrecord USING btree (deviceid);
+CREATE INDEX idx_alert_timestamp ON public.alert USING btree (timestamp);
+CREATE INDEX idx_alert_status ON public.alert USING btree (alertstatus);
+CREATE INDEX idx_wearabledevice_patient ON public.wearabledevice USING btree (assignedpatientid);
+CREATE INDEX idx_patientcaregiverjunction_caregiver ON public.patientcaregiverjunction USING btree (caregiverid);
+
+--
+-- PostgreSQL database dump complete
+--
+
